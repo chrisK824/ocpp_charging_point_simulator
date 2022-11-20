@@ -1,0 +1,2 @@
+ocpp==0.15.0
+websockets==10.2
