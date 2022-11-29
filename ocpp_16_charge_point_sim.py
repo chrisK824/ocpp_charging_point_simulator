@@ -22,7 +22,7 @@
 # SOFTWARE.
 
 # Usage
-# python ocpp_16_charge_point_sim.py <CS_IP> <CS_PORT> <CS_PATH> <cp_name>
+# python3.9 ocpp_16_charge_point_sim.py <OCPP SERVER IP ADDRESS> <OCPP SERVER PORT> <WS PATH> <CHARGING POINT ID> <VENDOR NAME (OPTIONAL)>
 
 
 import asyncio
