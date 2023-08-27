@@ -26,24 +26,19 @@
 
 
 import asyncio
-from distutils.log import info
 import logging
-import json
 from datetime import datetime, timedelta
-from os import error
-from pickle import FALSE
-from typing import AnyStr
 import websockets
 import sys
 from datetime import datetime, timedelta
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import decimal
 
-from ocpp.v16.datatypes import MeterValue, SampledValue
-from ocpp.v16 import call, call_result
 from ocpp.v16 import ChargePoint as cp
-from ocpp.v16.enums import *
+from ocpp.v16 import call, call_result
 from ocpp.routing import on, after
+from ocpp.v16.enums import *
+from ocpp.v16.datatypes import MeterValue, SampledValue
 
 logging.basicConfig(level=logging.INFO)
 CP_VENDOR = "Test"
@@ -148,7 +143,7 @@ class ChargePoint(cp):
         while True:
             try:
                 request = call.HeartbeatPayload()
-                response = await self.call(request)
+                await self.call(request)
                 # Heartbeat rate in sec
                 await asyncio.sleep(int(config_heartbeat_interval))
             except:
@@ -168,14 +163,6 @@ class ChargePoint(cp):
             except:
                 raise
 
-        response = await self.call(request)
-
-        if response.id_tag_info["status"] == "Accepted":
-            logging.info("Authorization successful")
-            return True
-        else:
-            logging.info("Authorization unsuccessful")
-            return False
 
     async def start_transaction(self):
         request = call.StartTransactionPayload(
@@ -183,7 +170,6 @@ class ChargePoint(cp):
             id_tag='1',
             meter_start=0,          # Initial Energy meter value / integer
             timestamp=datetime.utcnow().isoformat()
-            # reservation_id=1
         )
         response = await self.call(request)
         await self.send_status_notification(ChargePointErrorCode.ev_communication_error, ChargePointStatus.preparing)
@@ -286,7 +272,7 @@ class ChargePoint(cp):
         unit = cs_charging_profiles["charging_schedule"]["charging_rate_unit"]
         limit = cs_charging_profiles["charging_schedule"]["charging_schedule_period"][0]["limit"]
         duration = cs_charging_profiles["charging_schedule"]["duration"]
-        print(meter_value_power_active_import)
+
         if float(meter_value_power_active_import.value) > 0:
             if unit == "W" and limit:
                 last_known_power_limit = meter_value_power_active_import.value
